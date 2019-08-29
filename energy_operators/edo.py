@@ -1,4 +1,3 @@
-from scipy.signal import hilbert
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib
@@ -56,41 +55,24 @@ def gen_edo(x, DBplot=False):
                                                        h[nl+1] * h[nl-1]) / 2)
 
     # trim and zero-pad and the ends:
-    x_edo = np.pad(xx[2:len(xx) - 3], (2, 2),
+    x_edo = np.pad(xx[2:(len(xx) - 2)], (2, 2),
                    'constant', constant_values=(0, 0))
 
     return(x_edo[0:N_start])
 
 
-DBplot = True
-# interactive plots:
-plt.ion()
+def test_edo_random():
+    # if (__name__ == '__main__'):
+    DBplot = True
 
-x = np.random.randn(120)
+    x = np.random.randn(102)
+    x_e = gen_edo(x)
 
-
-# test and compare with scipy implementation:
-z = discrete_hilbert(x, False)
-z_test = np.imag(hilbert(x))
-print('difference between Hilbert estimates: %g' % (sum(abs(z - z_test))))
-
-x_e = gen_edo(x)
-print('LENGTH: x = %d; EDO = %d' % (len(x), len(x_e)))
-
-# -------------------------------------------------------------------
-# plotting to check all ok?
-# -------------------------------------------------------------------
-if DBplot:
-    plt.figure(1, clear=True)
-    plt.plot(x, '-x')
-    plt.plot(np.real(z), '-o')
-
-    X = abs(np.fft.fft(x)) ** 2
-    Z = abs(np.fft.fft(z)) ** 2
-    plt.figure(2, clear=True)
-    plt.plot(X, '-x')
-    plt.plot(Z, '-o')
-
-    plt.figure(3, clear=True)
-    plt.plot(x_e)
-    plt.title('EDO')
+    # -------------------------------------------------------------------
+    # plot
+    # -------------------------------------------------------------------
+    if DBplot:
+        plt.figure(1, clear=True)
+        plt.plot(x)
+        plt.plot(x_e)
+        plt.title('EDO')

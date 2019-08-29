@@ -1,10 +1,10 @@
-Estimating Instantaneous Energy 
-================================
+# Estimating Instantaneous Energy 
 
-Collection of M-files (computer code) to implement instantaneous energy measures, including the "nonlinear energy operator", as
-described in [[1]](#references).
-Requires Matlab or Octave programming environments.
+Python code to implement instantaneous energy measures, including the "envelope derivative
+operator", as described in [[1]](#references).  Requires the Python 3, NumPy, Matplotlib,
+and Pandas.
 
+This is Python implementation of the Matlab code at: https://github.com/otoolej/nonlinear-energy-operators
 
 # contents
 * [overview](#overview)
@@ -116,7 +116,7 @@ newer, [Octave website](http://www.gnu.org/software/octave/index.html), with the
 # licence
 
 ```
-Copyright (c) 2014, John O' Toole, University College Cork
+Copyright (c) 2019, John O' Toole, University College Cork
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -150,7 +150,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 1. JM O' Toole and NJ Stevenson, “Assessing instantaneous energy in the EEG: a
 non-negative, frequency-weighted energy operator”, IEEE Int. Conf. on Eng. in Medicine and
-Biology, EMBC’14, Chicago, USA, August 2014. [ [paper](publications/JMOToole_energy_EMBC14.pdf) | [poster](publications/EMBC_poster_Aug2014_NLEO.pdf) ]
+Biology, EMBC’14, Chicago, USA, August 2014. [ [paper](docs/JMOToole_energy_EMBC14.pdf) | [poster](docs/EMBC_poster_Aug2014_NLEO.pdf) ]
 
 
 ---
