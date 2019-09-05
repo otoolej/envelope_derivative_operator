@@ -1,16 +1,33 @@
+"""compute the envelope derivative operator (EDO), as defined in [1].
+
+[1] JM O' Toole, A Temko, NJ Stevenson, “Assessing instantaneous energy in the EEG: a
+non-negative, frequency-weighted energy operator”, IEEE Int. Conf.  on Eng. in Medicine
+and Biology, Chicago, August 2014
+
+
+John M. O' Toole, University College Cork
+Started: 05-09-2019
+last update: <2019-09-04 13:36:01 (otoolej)>
+"""
 import numpy as np
 from matplotlib import pyplot as plt
-import matplotlib
-# Problem with GTK3Agg (the default) so use this (must have PyQT5 installed):
-matplotlib.use('Qt5Agg')
-# matplotlib.use('GTK3Cairo')
-
-# testing only, shouldn't need this in the future:
 
 
 def discrete_hilbert(x, DBplot=False):
-    """
-    Discrete Hilbert transform
+    """Discrete Hilbert transform
+
+    Parameters
+    ----------
+    x: array_type
+        input signal
+    DBplot: bool, optional
+        plot or not 
+
+    Returns
+    -------
+    x_hilb : array_type
+        Hilbert transform of x
+
     """
     N = len(x)
     Nh = np.ceil(N / 2)
@@ -35,8 +52,20 @@ def gen_edo(x, DBplot=False):
 
     where y(n) is the derivative of x(n) using the central-finite method and H[.] is the
     Hilbert transform.
-    """
 
+    Parameters
+    ----------
+    x: array_type
+        input signal
+    DBplot: bool, optional
+        plot or not
+
+    Returns
+    -------
+    x_edo : array_type
+        EDO of x
+
+    """
     # 1. check if odd length and if so make even:
     N_start = len(x)
     if (N_start % 2) != 0:
@@ -62,9 +91,10 @@ def gen_edo(x, DBplot=False):
 
 
 def test_edo_random():
+    """test EDO with a random signal"""
     # if (__name__ == '__main__'):
-    DBplot = True
 
+    DBplot = True
     x = np.random.randn(102)
     x_e = gen_edo(x)
 
@@ -72,7 +102,9 @@ def test_edo_random():
     # plot
     # -------------------------------------------------------------------
     if DBplot:
-        plt.figure(1, clear=True)
-        plt.plot(x)
-        plt.plot(x_e)
-        plt.title('EDO')
+        plt.figure(2, clear=True)
+        hl1, = plt.plot(x, label='test signal')
+        hl2, = plt.plot(x_e, label='EDO')
+        plt.legend(handles=[hl1, hl2], loc='upper right')
+        plt.pause(0.0001)
+        # plt.show(block=False)

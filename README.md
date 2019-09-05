@@ -1,115 +1,120 @@
 # Estimating Instantaneous Energy 
 
 Python code to implement instantaneous energy measures, including the "envelope derivative
-operator", as described in [[1]](#references).  Requires the Python 3, NumPy, Matplotlib,
-and Pandas.
+operator", as described in [[1]](#references).  Requires the Python 3 with NumPy, Matplotlib,
+and Pandas packages.
 
-This is Python implementation of the Matlab code at: https://github.com/otoolej/nonlinear-energy-operators
+This is Python implementation of the Matlab code, also on [github](https://github.com/otoolej/nonlinear-energy-operators).
 
-# contents
-* [overview](#overview)
-* [quick start](#quick-start)
-* [requirements](#requirements)
-* [test computer setup](#test-computer-setup)
-* [licence](#licence)
-* [references](#references)
-* [contact](#contact)
 
 
 # overview
-Implements methods to estimate frequency-weighted instantaneous energy.  Implements the
-Teager–Kaiser operator, often referred to as the nonlinear energy operator, and a similar
+Implements methods to estimate frequency-weighted instantaneous energy including the
+Teager–Kaiser operator (also referred to as the nonlinear energy operator) and a similar
 frequency-weight operator proposed in reference [[1]](#references). The Teager–Kaiser operator is
 simply defined, for discrete signal x(n), as
 ```
 Ψ[x(n)] = x²(n) - x(n+1)x(n-1)
 ```  
-and the proposed energy measure is defined as
+and the proposed energy measure—which we call the envelope derivative operator (EDO)—is defined as
 ```
  Γ[x(n)] = y²(n) + H[y(n)]²
 ```
 where y(n) is the derivative of x(n), estimated using the central-finite difference
-equation y(n)=[x(n+1)-x(n-1)]/2, and H[·] is the discrete Hilbert transform of x(n).  Reference [[1]](#references) contains more details.
+equation y(n)=[x(n+1)-x(n-1)]/2, and H[·] is the discrete Hilbert transform of x(n). 
+Reference [[1]](#references) contains more details.
 
 
 # quick start
+Use the `demo.py` to run a few examples from the command line:
+```bash
+$ python3 demo.py
+```
 
-The following example generates the Teager–Kaiser operator and the proposed
-envelope–derivative operator for a test signal (sum of two sinusoidals signals),
-cut-and-paste the following code into Matlab (or Octave):
-```matlab
-  % generate two sinusoidal signals:
-  N=256; n=0:N-1;
-  w1=pi/(N/32); ph1=-pi+2*pi*rand(1,1);  a1=1.3;
-  w2=pi/(N/8); ph2=-pi+2*pi*rand(1,1);  a2=3.1;
-  x1=a1.*cos(w1.*n + ph1);  x2=a2.*cos(w2.*n + ph2);
-  x=x1+x2;
+# examples
 
-  % compute instantaneous energy:
-  x_env_diff=cal_freqweighted_energy(x,1,'envelope_diff');
-  x_teager  =cal_freqweighted_energy(x,1,'teager');
+Test EDO with a random signal:
+```python
+	from energy_operators import edo
 
-  % plot:
-  figure(1); clf; 
-  subplot(211); hold all; plot(x); ylabel('amplitude');
-  subplot(212); hold all; plot(x_env_diff,'-'); plot(x_teager,'--');
-  ylabel('energy');
-  legend('envelope-derivative','Teager-Kaiser');
+	edo.test_edo_random()
+```	
+
+Generates the EDO and the Teager–Kaiser operator for a test signal, the sum of two sinusoidal signals:
+```python
+	import numpy as np
+	from matplotlib import pyplot as plt
+
+	from energy_operators import general_nleo
+	from energy_operators import edo
+	from test_functions import gen_test_signals
+	from test_functions import test_edo
+
+
+	# 1. generate test signal composed of 2 sinusoidal signals
+	N = 256
+	n = np.arange(N)
+	w = (np.pi / (N / 32), np.pi / (N / 8))
+	ph = (-np.pi + 2 * np.pi * np.random.rand(1),
+		  -np.pi + 2 * np.pi * np.random.rand(1))
+	a = (1.3, 3.1)
+	x = a[0] * np.cos(w[0] * n + ph[0]) + a[1] * np.cos(w[1] * n + ph[1])
+
+	# 2. estimate the EDO
+	x_edo = edo.gen_edo(x, True)
+
+	# 3. generate Teager--Kaiser operator for comparison:
+	x_nleo = general_nleo.specific_nleo(x, type='teager')
+
+	# 4. plot
+	fig, ax = plt.subplots(nrows=2, ncols=1, num=1, clear=True)
+	ax[0].plot(x, '-', label='test signal')
+	ax[1].plot(x_edo, '-', label='EDO')
+	ax[1].plot(x_nleo, label='Teager-Kaiser')
+	ax[0].legend(loc='upper right')
+	ax[1].legend(loc='upper left')
 ```
 
 
 ## properties
 To test the properties of the operators with some example signals, call
-`properties_test_Hilbert_NLEO(number)` with argument `number` either 0,1,2,3, or 4. For
-example, 
-```matlab
-  >> properties_test_Hilbert_NLEO(3);
+`test_edo.compare_edo_test_signals(number)` with argument `number` either '0', '1', '2',
+'3', or '4'. 
+For example, 
+```python
+   from test_functions import test_edo
+
+   test_edo.compare_edo_test_signals('3')
 ```
 calls the function with frequency modulated signal with instantaneous frequency law of
 0.1+0.3sin(tπ/N).
 
-## noise analysis
-To compare the bias for each method, run the function
-```matlab
-  >> bias_of_estimators;
-```
-which computes the mean-value (and therefore an approximation to the Expectation operator)
-of 10,000 iterations of white Gaussian noise. This then produces Fig. 2 in the ‘Noise
-Analysis’ section of [[1]](#references).
-
 
 # files
-All Matlab files (.m files) have a description and an example in the header. To read this
-header, type `help <filename.m>` in Matlab.  Directory structure is as follows: 
+Directory structure as follows: 
 ```
 .
-├── bias_of_estimators.m              # noise analysis: estimate bias with WGN
-├── cal_freqweighted_energy.m         # select method to estimate instantaneous energy
-├── discrete_Hilbert_diff_operator.m  # proposed envelope–derivative operator
-├── do_bandpass_filtering.m           # simply band-pass filtering
-├── general_nleo.m                    # general Nonlinear Energy Operator (Plotkin–Swamy)
-├── nleo_parameters.m                 # set parameters here (directions etc.)
-├── pics/                             # directory for figures
-├── properties_test_Hilbert_NLEO.m    # test properties of the different operator
-└── requires_EEG_data		          # directory containing files for EEG analysis
-    ├── compare_nleo_methods.m		  # these files require EEG data to run.
-    ├── plot_eeg_examples.m	
-    └── script_test_eeg_data.m
+├── data                        # csv files for testing with Matlab implementation
+├── docs                        # papers and docs. related to the package
+├── energy_operators            # PACKAGE: modules to generate the energy operators
+│   ├── edo.py             
+│   └── general_nleo.py
+├── LICENSE.md
+├── demo.py                     # script containing examples on how to use this package
+├── README.md
+├── requirements.txt
+└── test_functions              # PACKAGE: modules to generate test signals
+    ├── compare_matlab.py
+    ├── gen_test_signals.py
+    └── test_edo.py
 ```
 
 
 # requirements
-Either Matlab (R2012 or newer,
-[Mathworks website](http://www.mathworks.co.uk/products/matlab/)) or Octave (v3.6 or
-newer, [Octave website](http://www.gnu.org/software/octave/index.html), with the
-'octave-signal' add-on package).
-
-
-
-# test computer setup
-- hardware:  Intel(R) Xeon(R) CPU E5-1603 0 @ 2.80GHz; 8GB memory.
-- operating system: Ubuntu GNU/Linux x86_64 distribution (Trusty Tahr, 14.04), with Linux kernel 3.13.0-27-generic
-- software: Octave 3.8.1 (using Gnuplot 4.6 patchlevel 4), with 'octave-signal' toolbox and Matlab (R2009b, R2012a, and R2013a)
+Developed and tested with Python 3.7. Requires:
+- NumPy version 1.17.0
+- matplotlib version 3.1.1
+- pandas version 0.25.0
 
 ---
 
@@ -150,7 +155,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 1. JM O' Toole and NJ Stevenson, “Assessing instantaneous energy in the EEG: a
 non-negative, frequency-weighted energy operator”, IEEE Int. Conf. on Eng. in Medicine and
-Biology, EMBC’14, Chicago, USA, August 2014. [ [paper](docs/JMOToole_energy_EMBC14.pdf) | [poster](docs/EMBC_poster_Aug2014_NLEO.pdf) ]
+Biology, EMBC’14, Chicago, USA, August 2014. [ [paper](docs/JMOToole_energy_EMBC14.pdf) |
+[poster](docs/EMBC_poster_Aug2014_NLEO.pdf) ]
 
 
 ---
@@ -160,9 +166,9 @@ Biology, EMBC’14, Chicago, USA, August 2014. [ [paper](docs/JMOToole_energy_EM
 John M. O' Toole
 
 Neonatal Brain Research Group,  
-Irish Centre for Fetal and Neonatal Translational Research ([INFANT](http://www.infantcentre.ie)),  
+INFANT Research Centre ([INFANT](http://www.infantcentre.ie)),  
 Department of Paediatrics and Child Health,  
 University College Cork,  
 Cork, Ireland
 
-
+email: jotoole -- AT -- ucc .-. DOT ._. ie

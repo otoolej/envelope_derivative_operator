@@ -6,46 +6,57 @@
  John M. O' Toole, University College Cork
  Started: 28-01-2014
 
- last update: Time-stamp: <2019-08-29 11:44:25 (otoolej)>
+ last update: Time-stamp: <2019-09-05 12:16:40 (otoolej)>
 """
 import numpy as np
 from matplotlib import pyplot as plt
 
 
 def gen_nleo(x, l=1, p=2, q=0, s=3):
+    """general form of the nonlinear energy operator (NLEO)
+
+    General NLEO expression: Ψ(n) = x(n-l)x(n-p) - x(n-q)x(n-s)
+    for l+p=q+s  (and [l,p]≠[q,s], otherwise Ψ(n)=0)
+
+    Parameters
+    ----------
+    x: array_type
+        input signal
+    l: int, optional
+        parameter of NLEO expression (see above)
+    p: int, optional
+        parameter of NLEO expression (see above)
+    q: int, optional
+        parameter of NLEO expression (see above)
+    s: int, optional
+        parameter of NLEO expression (see above)
+
+    Returns
+    -------
+    x_nleo : array_type
+        NLEO array
+
+    Example
+    -------
+    import numpy as np
+
+    # generate test signal
+    N = 256
+    n = np.arange(N)
+    w1 = np.pi / (N / 32)
+    ph1 = -np.pi + 2 * np.pi * np.random.rand(1)
+    a1 = 1.3
+    x1 = a1 * np.cos(w1 * n + ph1)
+
+    # compute instantaneous energy:
+    x_nleo = gen_nleo(x1, 1, 2, 0, 3)
+
+    # plot:
+    plt.figure(1, clear=True)
+    plt.plot(x1, '-o', label='test signal')
+    plt.plot(x_nleo, '-o', label='Agarwal-Gotman')
+    plt.legend(loc='upper left')
     """
-    general_nleo: General NLEO expression: Ψ(n) = x(n-l)x(n-p) - x(n-q)x(n-s)
-                  for l+p=q+s  (and [l,p]≠[q,s], otherwise Ψ(n)=0)
-
-    Inputs:
-        x       - input signal
-        l,p,q,s - parameters for the operator; integer values and must satisfy:
-                    l+p=q+s and [l,p]≠[q,s]
-
-    Outputs:
-        x_nleo - output nonlinear energy operator
-
-    Example:
-        import numpy as np
-
-        # generate test signal
-        N = 256
-        n = np.arange(N)
-        w1 = np.pi / (N / 32)
-        ph1 = -np.pi + 2 * np.pi * np.random.rand(1)
-        a1 = 1.3
-        x1 = a1 * np.cos(w1 * n + ph1)
-
-        # compute instantaneous energy:
-        x_nleo = gen_nleo(x1, 1, 2, 0, 3)
-
-        # plot:
-        plt.figure(1, clear=True)
-        plt.plot(x1, '-o', label='test signal')
-        plt.plot(x_nleo, '-o', label='Agarwal-Gotman')
-        plt.legend(loc='upper left')
-    """
-
     # check parameters:
     if ((l + p) != (q + s) and any(np.sort((l, p)) != np.sort((q, s)))):
         warning('Incorrect parameters for NLEO. May be zero!')
@@ -62,8 +73,19 @@ def gen_nleo(x, l=1, p=2, q=0, s=3):
 
 
 def specific_nleo(x, type='teager'):
-    """
-    generate different NLEOs based on the same operator
+    """ generate different NLEOs based on the same operator 
+
+    Parameters
+    ----------
+    x: array_type
+        input signal
+    type: {'teager', 'agarwal', 'palmu', 'abs_teager', 'env_only'}
+        which type of NLEO? 
+
+    Returns
+    -------
+    x_nleo : array_type
+        NLEO array
     """
 
     def teager():
@@ -101,8 +123,14 @@ def specific_nleo(x, type='teager'):
 
 
 def test_compare_nleos(x=None, DBplot=True):
-    """
-    test the NLEO with a random signal
+    """ test all NLEO variants with 1 signal
+
+    Parameters
+    ----------
+    x: array_type, optional
+        input signal (defaults to coloured Gaussian noise)
+    DBplot: bool
+        plot or not
     """
     if x is None:
         N = 128
@@ -117,9 +145,10 @@ def test_compare_nleos(x=None, DBplot=True):
         x_nleo[n] = specific_nleo(x, n)
 
     if DBplot:
-        fig, ax = plt.subplots(nrows=2, ncols=1, num=1, clear=True)
+        fig, ax = plt.subplots(nrows=2, ncols=1, num=4, clear=True)
         ax[0].plot(x, '-o', label='test signal')
         for n in all_methods:
             ax[1].plot(x_nleo[n], '-o', label=all_methods_strs[n])
         ax[0].legend(loc='upper right')
         ax[1].legend(loc='upper left')
+        plt.pause(0.0001)
