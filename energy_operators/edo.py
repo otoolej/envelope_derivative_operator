@@ -18,14 +18,14 @@ def discrete_hilbert(x, DBplot=False):
 
     Parameters
     ----------
-    x: array_type
+    x: ndarray
         input signal
     DBplot: bool, optional
         plot or not 
 
     Returns
     -------
-    x_hilb : array_type
+    x_hilb : ndarray
         Hilbert transform of x
 
     """
@@ -55,14 +55,14 @@ def gen_edo(x, DBplot=False):
 
     Parameters
     ----------
-    x: array_type
+    x: ndarray
         input signal
     DBplot: bool, optional
         plot or not
 
     Returns
     -------
-    x_edo : array_type
+    x_edo : ndarray
         EDO of x
 
     """

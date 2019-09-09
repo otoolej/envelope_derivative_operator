@@ -6,7 +6,7 @@
  John M. O' Toole, University College Cork
  Started: 28-01-2014
 
- last update: Time-stamp: <2019-09-05 12:16:40 (otoolej)>
+ last update: Time-stamp: <2019-09-06 10:49:37 (otoolej)>
 """
 import numpy as np
 from matplotlib import pyplot as plt
@@ -20,7 +20,7 @@ def gen_nleo(x, l=1, p=2, q=0, s=3):
 
     Parameters
     ----------
-    x: array_type
+    x: ndarray
         input signal
     l: int, optional
         parameter of NLEO expression (see above)
@@ -33,7 +33,7 @@ def gen_nleo(x, l=1, p=2, q=0, s=3):
 
     Returns
     -------
-    x_nleo : array_type
+    x_nleo : ndarray
         NLEO array
 
     Example
@@ -77,14 +77,14 @@ def specific_nleo(x, type='teager'):
 
     Parameters
     ----------
-    x: array_type
+    x: ndarray
         input signal
     type: {'teager', 'agarwal', 'palmu', 'abs_teager', 'env_only'}
         which type of NLEO? 
 
     Returns
     -------
-    x_nleo : array_type
+    x_nleo : ndarray
         NLEO array
     """
 
@@ -127,7 +127,7 @@ def test_compare_nleos(x=None, DBplot=True):
 
     Parameters
     ----------
-    x: array_type, optional
+    x: ndarray, optional
         input signal (defaults to coloured Gaussian noise)
     DBplot: bool
         plot or not

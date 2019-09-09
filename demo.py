@@ -19,6 +19,7 @@ __version__ = "0.0.1"
 import numpy as np
 from matplotlib import pyplot as plt
 
+
 from energy_operators import general_nleo
 from energy_operators import edo
 from test_functions import gen_test_signals
